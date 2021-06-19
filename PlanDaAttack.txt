@@ -1,0 +1,18 @@
+Plan da Attack:
+  Simpele planningsapplicatie met 1 agenda.
+  Afspraken mogen niet overlappen
+
+  Rest API met volgende functies:
+    * PlanAfspraak
+    * geefEersteVrijeSlotVanaf
+
+  planAfspraak:
+    - Params: Organizer (email), Titel, Omschrijving, Begintijd, Eindtijd
+        - By using Datetime database operations become easier
+        - Entire day appointments just span the entire day with BeginTijd and EndTijd.
+
+    - IlligalStateException wanneer niet beschikbaar.
+
+  geefEersteVrijeSlotVanaf:
+    - Params: vanTijd, duration
+        - Searches the database for the first slot between appointments of duration.
