@@ -13,4 +13,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long>
 
     @Query(value = "SELECT * FROM appointment AS a WHERE (a.startdtime, a.enddtime) OVERLAPS (?1, ?2)", nativeQuery = true)
     List<Appointment> findAppointmentsBetween(LocalDateTime startDTime, LocalDateTime endDTime);
+
+    @Query(value = "SELECT * FROM appointment AS a WHERE a.startdtime > (now() - interval '1 day')", nativeQuery = true)
+    List<Appointment> findActiveAppointments();
 }

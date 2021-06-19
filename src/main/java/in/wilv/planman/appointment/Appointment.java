@@ -1,9 +1,11 @@
 package in.wilv.planman.appointment;
 
 import javax.persistence.*;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.Period;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 @Entity
@@ -37,6 +39,13 @@ public class Appointment
 
     @Transient
     private long duration;
+
+    @Transient
+    private long qStartIndex;
+    @Transient
+    private long qEndIndex;
+    @Transient
+    private long qDuration;
 
     protected Appointment() {}
 
@@ -86,5 +95,47 @@ public class Appointment
 
     public long getDuration() {
         return Duration.between(this.startDTime, this.endDTime).toMillis();
+    }
+
+    public static long getQIndex(LocalDateTime start, LocalDateTime end)
+    {
+        //LocalDateTime dayStart = LocalDateTime.of(start.toLocalDate(), LocalTime.MIDNIGHT);
+        long minutes = ChronoUnit.MINUTES.between(start, end);
+
+        long mod = minutes % 15;
+        long res = 0;
+        if ((mod) >= 8L) {
+            res = minutes + (15 - mod);
+        } else {
+            res = minutes - mod;
+        }
+
+        return res / 15;
+    }
+
+    public long getqStartIndex()
+    {
+        LocalDateTime dayStart = LocalDateTime.of(this.startDTime.toLocalDate(), LocalTime.MIDNIGHT);
+        return Appointment.getQIndex(dayStart, this.startDTime);
+    }
+
+    public long getqEndIndex()
+    {
+        LocalDateTime dayStart = LocalDateTime.of(this.startDTime.toLocalDate(), LocalTime.MIDNIGHT);
+        return Appointment.getQIndex(dayStart, this.endDTime);
+    }
+
+    public long getqDuration()
+    {
+        return (this.getqEndIndex() - this.getqStartIndex());
+    }
+
+    public List<LocalDate> getDatesOfAppointment()
+    {
+        List<LocalDate> dates = this.startDTime.toLocalDate().datesUntil(this.endDTime.toLocalDate())
+                .collect(Collectors.toList());
+        dates.add(this.endDTime.toLocalDate());
+
+        return dates;
     }
 }
