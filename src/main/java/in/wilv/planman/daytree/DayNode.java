@@ -25,8 +25,8 @@ public class DayNode
     {
         if(!this.isContiguous())
         {
-            Long totalFreetime = node0.qFreeTime + node1.qFreeTime;
-            if(totalFreetime <= this.left.qFreeTime) {
+            Long totalFreeTime = node0.qFreeTime + node1.qFreeTime;
+            if(totalFreeTime <= this.left.qFreeTime) {
                 this.left.addNodes(node0, node1);
             } else {
                 this.right.addNodes(node0, node1);
@@ -58,12 +58,14 @@ public class DayNode
         return qIndexStart;
     }
 
-    public void moveQIndexStart(long newIndex) {
+    public void moveQIndexStart(long newIndex)
+    {
         this.qIndexStart = newIndex;
         this.qFreeTime = (qIndexEnd - qIndexStart);
     }
 
-    public void moveQEndIndex(long newIndex) {
+    public void moveQEndIndex(long newIndex)
+    {
         this.qIndexEnd = newIndex;
         this.qFreeTime = (qIndexEnd - qIndexStart);
     }

@@ -1,6 +1,6 @@
 package in.wilv.planman.appointment;
 
-import in.wilv.planman.daytree.FreeTimeDBSingleton;
+import in.wilv.planman.daytree.FreeTimeDB;
 import in.wilv.planman.daytree.FreeTimeSlot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,12 +13,17 @@ import java.util.List;
 @Service
 public class AppointmentService
 {
+
     private final AppointmentRepository appointmentRepository;
+    private final FreeTimeDB freeTimeDB;
 
     @Autowired
-    public AppointmentService(AppointmentRepository appointmentRepository)
+    public AppointmentService(
+            AppointmentRepository appointmentRepository,
+            FreeTimeDB freeTimeDB)
     {
         this.appointmentRepository = appointmentRepository;
+        this.freeTimeDB = freeTimeDB;
     }
 
     public List<Appointment> getAppointments() {
@@ -38,7 +43,6 @@ public class AppointmentService
         }
 
         appointmentRepository.save(appointment);
-        FreeTimeDBSingleton freeTimeDB = FreeTimeDBSingleton.getInstance();
         freeTimeDB.addAppointment(appointment);
 
         return;
@@ -54,7 +58,6 @@ public class AppointmentService
 
     public FreeTimeSlot getFreeSlotFrom(LocalDate from, long qDuration)
     {
-        FreeTimeDBSingleton freeTimeDB = FreeTimeDBSingleton.getInstance();
         return freeTimeDB.findFreePeriod(from, qDuration);
     }
 }

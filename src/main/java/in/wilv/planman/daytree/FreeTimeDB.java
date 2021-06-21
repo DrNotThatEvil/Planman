@@ -2,6 +2,7 @@ package in.wilv.planman.daytree;
 
 import in.wilv.planman.appointment.Appointment;
 import in.wilv.planman.daytree.FreeTimeSlot;
+import org.apache.tomcat.jni.Local;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,24 +12,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public class FreeTimeDBSingleton
+
+public class FreeTimeDB
 {
-    private static FreeTimeDBSingleton freeTimeDBSingleton;
     private HashMap<LocalDate, DayTree> dateTreeMap;
 
-    private FreeTimeDBSingleton()
+    public FreeTimeDB()
     {
         this.dateTreeMap = new HashMap<LocalDate, DayTree>();
-    }
-
-    public static FreeTimeDBSingleton getInstance()
-    {
-        if (freeTimeDBSingleton == null) {
-            freeTimeDBSingleton = new FreeTimeDBSingleton();
-        }
-
-        return freeTimeDBSingleton;
     }
 
     public void addAppointment(Appointment appointment)
@@ -124,4 +117,11 @@ public class FreeTimeDBSingleton
         return findFreePeriod(date.plusDays(1), QDuration);
     }
 
+    public void cleanOldKeys()
+    {
+        // clears dates before today - 1, -1 to be sure appointments are passed.
+        dateTreeMap.entrySet().removeIf(
+                e -> e.getKey().isBefore(LocalDate.now().minusDays(1))
+        );
+    }
 }

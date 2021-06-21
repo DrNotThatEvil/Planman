@@ -4,7 +4,7 @@ import in.wilv.planman.appointment.Appointment;
 import in.wilv.planman.appointment.AppointmentRepository;
 import in.wilv.planman.daytree.DayNode;
 import in.wilv.planman.daytree.DayTree;
-import in.wilv.planman.daytree.FreeTimeDBSingleton;
+import in.wilv.planman.daytree.FreeTimeDB;
 import in.wilv.planman.daytree.FreeTimeSlot;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -13,12 +13,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.TimeZone;
 
-@SpringBootApplication(scanBasePackages = {"in.wilv.planman.appointment"})
-public class PlanmanApplication {
+@SpringBootApplication(scanBasePackages = {"in.wilv.planman.appointment", "in.wilv.planman.daytree"})
+public class PlanmanApplication
+{
+
+	@PostConstruct
+	void started() {
+		TimeZone.setDefault(TimeZone.getTimeZone("Europe/Amsterdam"));
+		System.out.println(TimeZone.getDefault());
+	}
 
 	public static void main(String[] args)
 	{
@@ -26,9 +35,18 @@ public class PlanmanApplication {
 	}
 
 	@Bean
-	public CommandLineRunner demo(AppointmentRepository repository)
+	public CommandLineRunner demo(AppointmentRepository repository, FreeTimeDB freeTimeDB)
 	{
 		return (args) -> {
+			/*
+			repository.save(new Appointment(
+					"Testing",
+					"Tester",
+					"Testing this thing!",
+					LocalDateTime.of(2021, 06, 20, 0, 0, 0),
+					LocalDateTime.of(2021, 06, 20, 2, 0, 0)
+			));
+
 			repository.save(new Appointment(
 					"Testing",
 					"Tester",
@@ -61,35 +79,9 @@ public class PlanmanApplication {
 					LocalDateTime.of(2021, 06, 21, 23, 59, 0)
 			));
 
-			FreeTimeDBSingleton instance = FreeTimeDBSingleton.getInstance();
-			instance.calculateDateInfo(repository.findActiveAppointments());
-
-			FreeTimeSlot free = instance.findFreePeriod(
-					LocalDate.of(2021, 06, 21),
-					9
-			);
-
-			System.out.println(free);
-
-				/*
-				if (appointment.getqEndIndex() > 96) {
-					// Appointment passes end of the day boundary
-					long qEndNextDayIndex = appointment.getqEndIndex() % 96;
-					for (LocalDate date : appointment.getDatesOfAppointment())
-					{
-						if(date.isEqual(appointment.getStartDTime().toLocalDate())) {
-							// Date is same as start date,
-						}
-					}
-
-					//System.out.println("Passed day boundary!! : " + qDays);
-					continue;
-				}
-				 */
-
-				// Appointment does not pass end of day boundary.
-
-
+			 */
+			freeTimeDB.calculateDateInfo(repository.findActiveAppointments());
+			freeTimeDB.cleanOldKeys();
 
 		};
 	}
