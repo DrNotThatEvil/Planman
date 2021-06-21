@@ -7,7 +7,6 @@ public class DayNode
     long qFreeTime;
     long qIndexStart;
     long qIndexEnd;
-
     DayNode left;
     DayNode right;
 
@@ -82,8 +81,8 @@ public class DayNode
                 "qFreeTime=" + qFreeTime +
                 ", qIndexStart=" + qIndexStart +
                 ", qIndexEnd=" + qIndexEnd +
-                ", left=" + left +
-                ", right=" + right +
+                ", left=" + (left == null ? "null" : left)+
+                ", right=" + (right == null ? "null" : right) +
                 '}';
     }
 }

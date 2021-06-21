@@ -11,6 +11,9 @@ public class DayTree
 
     public DayNode getNodeContainingIndexes(DayNode currentNode, long start, long end)
     {
+        start = Math.min(Math.max(start, 0), 96);
+        end = Math.min(Math.max(end, 0), 96);
+
         if (currentNode.isContiguous()) {
             if(currentNode.getqIndexStart() <= start && currentNode.getqIndexEnd() >= end) {
                 return currentNode;

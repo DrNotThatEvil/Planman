@@ -36,48 +36,48 @@ public class FreeTimeDB
     public void calculateDateInfo(List<Appointment> appointments)
     {
         for (Appointment appointment : appointments) {
+
+            int dateIndex = 0;
             for (LocalDate date : appointment.getDatesOfAppointment()) {
                 if (!dateTreeMap.containsKey(date)) {
                     dateTreeMap.put(date, new DayTree());
                 }
 
                 DayTree dayTree = dateTreeMap.get(date);
-                // DayNode dNode = dayTree.getFistContiguousWithMinSize(dayTree.root, appointment.getqDuration());
                 DayNode dNode = dayTree.getNodeContainingIndexes(
                         dayTree.root,
-                        appointment.getqStartIndex(),
-                        appointment.getqEndIndex()
+                        (dateIndex > 0 ? 0 : appointment.getqStartIndex()),
+                        appointment.getqEndIndex() - (DayNode.Q_DAY_LENGTH * dateIndex)
                 );
 
-                System.out.println("Current DNode: " + dNode.toString());
+                long roundedStartIndex = Math.min(Math.max((dateIndex > 0 ? 0 : appointment.getqStartIndex()), 0), 96);
+                long roundedEndIndex = Math.min(
+                        Math.max(appointment.getqEndIndex() - (DayNode.Q_DAY_LENGTH * dateIndex), 0), 96
+                );
 
-                if (appointment.getqStartIndex() == dNode.getqIndexStart()) {
+                if (roundedStartIndex == dNode.getqIndexStart()) {
                     // Appointment planned at the start of this free block.
                     // We will move the startIndex to the end of the appointment to schink it.
 
-                    dNode.moveQIndexStart(appointment.getqEndIndex());
-                } else if (appointment.getqEndIndex() == dNode.getqIndexEnd()) {
+                    dNode.moveQIndexStart(roundedEndIndex);
+                } else if (roundedEndIndex == dNode.getqIndexEnd()) {
                     // Appointment planned to end at the end of the block.
                     // We will move the Endindex to the start of the appointment to schink it.
 
-                    dNode.moveQEndIndex(appointment.getqStartIndex());
+                    dNode.moveQEndIndex(roundedStartIndex);
                 } else {
                     // Not at the start or end of the free time.
                     // To represent the free time before and after the appointment we add nodes to the tree.
 
                     // Calculate the indexes for Node 1
-                    DayNode node0 = new DayNode(dNode.getqIndexStart(), appointment.getqStartIndex());
+                    DayNode node0 = new DayNode(dNode.getqIndexStart(), roundedStartIndex);
 
                     // Calculate the indexes for Node 2
-                    DayNode node1 = new DayNode(appointment.getqEndIndex(), dNode.getqIndexEnd());
+                    DayNode node1 = new DayNode(roundedEndIndex, dNode.getqIndexEnd());
                     dNode.addNodes(node0, node1);
-
-                    System.out.println("Node 0:: " + node0.toString());
-                    System.out.println("Node 1:: " + node1.toString());
-                    continue;
                 }
 
-                System.out.println("New start index for the thing! " + dNode.toString());
+                ++dateIndex;
             }
         }
     }
