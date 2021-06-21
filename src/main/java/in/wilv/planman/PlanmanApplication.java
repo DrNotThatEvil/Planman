@@ -5,6 +5,7 @@ import in.wilv.planman.appointment.AppointmentRepository;
 import in.wilv.planman.daytree.DayNode;
 import in.wilv.planman.daytree.DayTree;
 import in.wilv.planman.daytree.FreeTimeDBSingleton;
+import in.wilv.planman.daytree.FreeTimeSlot;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,40 +33,40 @@ public class PlanmanApplication {
 					"Testing",
 					"Tester",
 					"Testing this thing!",
-					LocalDateTime.of(2021, 06, 19, 0, 0, 0),
-					LocalDateTime.of(2021, 06, 19, 2, 0, 0)
+					LocalDateTime.of(2021, 06, 21, 0, 0, 0),
+					LocalDateTime.of(2021, 06, 21, 2, 0, 0)
 			));
 
 			repository.save(new Appointment(
 					"Testing 3",
 					"Tester 3",
 					"Testing this thing!",
-					LocalDateTime.of(2021, 06, 19, 4, 45, 0),
-					LocalDateTime.of(2021, 06, 19, 11, 0, 0)
+					LocalDateTime.of(2021, 06, 21, 4, 45, 0),
+					LocalDateTime.of(2021, 06, 21, 11, 0, 0)
 			));
 
 			repository.save(new Appointment(
 					"Testing 2",
 					"Tester 2",
 					"Testing this thing!",
-					LocalDateTime.of(2021, 06, 19, 12, 0, 0),
-					LocalDateTime.of(2021, 06, 19, 15, 0, 0)
+					LocalDateTime.of(2021, 06, 21, 12, 0, 0),
+					LocalDateTime.of(2021, 06, 21, 15, 0, 0)
 			));
 
 			repository.save(new Appointment(
 					"Testing 3",
 					"Tester 3",
 					"Testing this thing!",
-					LocalDateTime.of(2021, 06, 19, 23, 45, 0),
-					LocalDateTime.of(2021, 06, 19, 23, 59, 0)
+					LocalDateTime.of(2021, 06, 21, 23, 45, 0),
+					LocalDateTime.of(2021, 06, 21, 23, 59, 0)
 			));
 
 			FreeTimeDBSingleton instance = FreeTimeDBSingleton.getInstance();
 			instance.calculateDateInfo(repository.findActiveAppointments());
 
-			Appointment free = instance.findFreePeriod(
-					LocalDate.of(2021, 06, 19),
-					8
+			FreeTimeSlot free = instance.findFreePeriod(
+					LocalDate.of(2021, 06, 21),
+					9
 			);
 
 			System.out.println(free);

@@ -1,6 +1,7 @@
 package in.wilv.planman.daytree;
 
 import in.wilv.planman.appointment.Appointment;
+import in.wilv.planman.daytree.FreeTimeSlot;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,7 +17,6 @@ public class FreeTimeDBSingleton
     private static FreeTimeDBSingleton freeTimeDBSingleton;
     private HashMap<LocalDate, DayTree> dateTreeMap;
 
-
     private FreeTimeDBSingleton()
     {
         this.dateTreeMap = new HashMap<LocalDate, DayTree>();
@@ -29,6 +29,14 @@ public class FreeTimeDBSingleton
         }
 
         return freeTimeDBSingleton;
+    }
+
+    public void addAppointment(Appointment appointment)
+    {
+        // Add the appointment to the system, at this point we assume this appointment
+        // has been checked and does not contain any overlap.
+
+        this.calculateDateInfo(List.of(appointment));
     }
 
     // TODO Calculate this info again on added info or expand it by adding nodes.
@@ -82,19 +90,18 @@ public class FreeTimeDBSingleton
     }
 
     // TODO: Translate this to the Controller / API
-    public Appointment findFreePeriod(LocalDate date, long QDuration)
+    public FreeTimeSlot findFreePeriod(LocalDate date, long QDuration)
     {
         // Check if date is newer then we calculated free time for.
         ArrayList<LocalDate> keys = new ArrayList<LocalDate>(dateTreeMap.keySet());
         if (!keys.contains(date)) {
-            System.out.println("That's easy just plan it in!");
             LocalDateTime startDTime = LocalDateTime.of(date, LocalTime.MIDNIGHT);
 
             Long qDurationToMinutes = (QDuration * 15);
             LocalDateTime endDTime = LocalDateTime.from(startDTime);
             endDTime = endDTime.plusMinutes(qDurationToMinutes);
 
-            return new Appointment("", "", "", startDTime, endDTime);
+            return new FreeTimeSlot(startDTime, endDTime);
         }
 
         // Date is on a day we have stuff planned, lets search for a slot.
@@ -111,7 +118,7 @@ public class FreeTimeDBSingleton
             endDTime = endDTime.plusMinutes(QDuration * 15);
 
 
-            return new Appointment("", "", "", startDTime, endDTime);
+            return new FreeTimeSlot(startDTime, endDTime);
         }
 
         return findFreePeriod(date.plusDays(1), QDuration);
