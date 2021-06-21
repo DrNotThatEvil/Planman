@@ -33,6 +33,7 @@ public class DayNode
             return;
         }
 
+        this.qFreeTime = (node0.qFreeTime + node1.qFreeTime);
         this.left = (node0.qIndexStart < node1.qIndexEnd ? node0 : node1);
         this.right = (node0.qIndexStart > node1.qIndexEnd ? node0 : node1);
     }
